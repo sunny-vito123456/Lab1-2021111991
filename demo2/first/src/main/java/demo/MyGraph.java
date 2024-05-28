@@ -79,14 +79,12 @@ public class MyGraph extends JFrame {
             e.printStackTrace();
         }
     }
-
     // Perform random walks multiple times and save results to a file
     public void randomWalkMultipleTimes(int times) {
         if (graph.getNodeCount() == 0) {
             System.out.println("Graph is empty. Cannot perform random walk.");
             return;
         }
-
         Random random = new Random();
 
         try (FileWriter writer = new FileWriter("random_walk_result.txt")) {
@@ -410,6 +408,4 @@ public class MyGraph extends JFrame {
 
         scanner.close();
     }
-
-
 }

@@ -21,70 +21,82 @@ public class MyGraph extends JFrame {
             System.out.println("Graph is empty. Cannot perform random walk.");
             return;
         }
+
         Scanner scanner = new Scanner(System.in);
         Random random = new Random();
-        try (FileWriter writer = new FileWriter("random_walk_choice_result.txt")) {
 
-            System.out.println("Do you want to continue?(y or n)");
-            String input = scanner.nextLine();
-            while (input.equals("y")) {
-                org.graphstream.graph.Node currentNode = graph.getNode(random.nextInt(graph.getNodeCount()));
-                List<String> walkResults = new ArrayList<>();
-                Set<String> visitedEdges = new HashSet<>();
-                Set<String> visitedNodes = new HashSet<>();
-                String lastVisitedNode = null;
+        org.graphstream.graph.Node currentNode = graph.getNode(random.nextInt(graph.getNodeCount()));
+        List<String> walkResults = new ArrayList<>();
+        Set<String> visitedEdges = new HashSet<>();
+        Set<String> visitedNodes = new HashSet<>();
+        String lastVisitedNode = null;
+
+        try {
+            // Open FileWriter in append mode
+            FileWriter writer = new FileWriter("random_walk.txt", true);
+
+            while (true) {
+                System.out.println("Current node is " + currentNode.getId());
 
                 StringBuilder walkResult = new StringBuilder();
+                walkResult.append(currentNode.getId()).append(" ");
+                walkResults.add(currentNode.getId());
+                visitedNodes.add(currentNode.getId());
 
-                while (true) {
-                    walkResult.append(currentNode.getId()).append(" ");
-                    walkResults.add(currentNode.getId());
-                    visitedNodes.add(currentNode.getId());
-
-                    org.graphstream.graph.Edge[] edges = currentNode.getLeavingEdgeSet().toArray(new org.graphstream.graph.Edge[0]);
-                    if (edges.length == 0 || visitedNodes.size() == graph.getNodeCount()) {
-                        break; // No outgoing edges or all nodes visited, end walk
-                    }
-
-                    // Randomly select an edge
-                    org.graphstream.graph.Edge nextEdge = edges[random.nextInt(edges.length)];
-
-                    // Output current random walk result
-                    walkResult.append("[").append(nextEdge.getId()).append("] ");
-                    walkResult.append(nextEdge.getTargetNode().getId()).append(" ");
-
-                    // Check if the selected edge has been visited before
-                    if (visitedEdges.contains(nextEdge.getId())) {
-                        lastVisitedNode = nextEdge.getTargetNode().getId();
-                        break;
-                    }
-
-                    visitedEdges.add(nextEdge.getId());
-                    currentNode = nextEdge.getTargetNode();
+                org.graphstream.graph.Edge[] edges = currentNode.getLeavingEdgeSet().toArray(new org.graphstream.graph.Edge[0]);
+                if (edges.length == 0 || visitedNodes.size() == graph.getNodeCount()) {
+                    break; // No outgoing edges or all nodes visited, end walk
                 }
 
-                // Add the last visited node to the results
-                if (lastVisitedNode != null) {
-                    walkResults.add(lastVisitedNode);
+                // Randomly select an edge
+                org.graphstream.graph.Edge nextEdge = edges[random.nextInt(edges.length)];
+
+                // Output current random walk result
+                walkResult.append("[").append(nextEdge.getId()).append("] ");
+                walkResult.append(nextEdge.getTargetNode().getId()).append(" ");
+                System.out.println("Current random walk result: " + walkResult.toString());
+
+                // Check if the selected edge has been visited before
+                if (visitedEdges.contains(nextEdge.getId())) {
+                    System.out.println("Cannot continue. Visited previously.");
+                    lastVisitedNode = nextEdge.getTargetNode().getId();
+                    break;
                 }
 
-                // Write the results to file
-                writer.write(String.join(" ", walkResults));
-                writer.write(System.lineSeparator()); // Add newline after each walk
-                System.out.println("Do you want to continue?");
-                input = scanner.nextLine();
+                visitedEdges.add(nextEdge.getId());
+                currentNode = nextEdge.getTargetNode();
+
+                System.out.println("Current edge: " + nextEdge.getId());
+                System.out.println("Do you want to continue? (y/n)");
+                String continueChoice = scanner.nextLine().trim();
+                if (continueChoice.equalsIgnoreCase("n") || visitedNodes.size() == graph.getNodeCount()) {
+                    break; // User chooses not to continue or all nodes visited
+                }
             }
-            System.out.println( " random walks have been saved to 'random_walk_choice_result.txt'");
+
+            // Add the last visited node to the results
+            if (lastVisitedNode != null) {
+                walkResults.add(lastVisitedNode);
+            }
+
+            // Write the results to file
+            writer.write(String.join(" ", walkResults));
+            writer.write(System.lineSeparator()); // Add newline after each walk
+
+            writer.close();
+            System.out.println("Random walk with user choice has been saved to 'random_walk.txt'");
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
+
     // Perform random walks multiple times and save results to a file
     public void randomWalkMultipleTimes(int times) {
         if (graph.getNodeCount() == 0) {
             System.out.println("Graph is empty. Cannot perform random walk.");
             return;
         }
+
         Random random = new Random();
 
         try (FileWriter writer = new FileWriter("random_walk_result.txt")) {
@@ -313,9 +325,9 @@ public class MyGraph extends JFrame {
         }
 
         if (bridgeWords.isEmpty()) {
-            return "No bridge words from " + "\"" + word1 + "\"" + " to " + "\"" + word2 + "\"";
+            return "No bridge words from " + "\""+word1+"\"" + " to " + "\""+word2+"\"";
         } else {
-            return "The bridge words from " + "\"" + word1 + "\"" + " to " + "\"" + word2 + "\"" + " is: " + String.join(", ", bridgeWords) + ".";
+            return "The bridge words from " + "\""+word1+"\"" + " to " + "\""+word2+"\"" + " is: " + String.join(", ", bridgeWords) + ".";
         }
     }
 
@@ -408,4 +420,8 @@ public class MyGraph extends JFrame {
 
         scanner.close();
     }
+
+
+
+
 }

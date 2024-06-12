@@ -17,16 +17,6 @@ public class TestMyGraph {
     myGraph = new MyGraph("C:\\Users\\Lenovo\\Desktop\\ruanjiangongcheng.txt");
     myGraph.graph = new SingleGraph("Test Graph");
     myGraph.readTextFile("C:\\Users\\Lenovo\\Desktop\\ruanjiangongcheng.txt");
-//    // 手动添加节点
-//    myGraph.graph.addNode("exported");
-//    myGraph.graph.addNode("with");
-//    myGraph.graph.addNode("popular");
-//    myGraph.graph.addNode("british");
-//
-//    // 手动添加边
-//    myGraph.graph.addEdge("hello->with", "hello", "with", true).setAttribute("ui.label", 1);
-//    myGraph.graph.addEdge("with->british", "with", "british", true).setAttribute("ui.label", 1);
-//    myGraph.graph.addEdge("british->world", "british", "world", true).setAttribute("ui.label", 1);
   }
 
 
@@ -45,13 +35,13 @@ public class TestMyGraph {
   @Test
   public void testQueryBridgeWords_Word1NotInGraph() {
     String result = myGraph.queryBridgeWords("foo", "british");
-    assertEquals("No foo in the graph!", result);
+    assertEquals("No first word foo in the graph!", result);
   }
 
   @Test
   public void testQueryBridgeWords_Word2NotInGraph() {
     String result = myGraph.queryBridgeWords("with", "foo");
-    assertEquals("No foo in the graph!", result);
+    assertEquals("No second word foo in the graph!", result);
   }
 
   @Test

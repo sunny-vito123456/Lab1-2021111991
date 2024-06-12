@@ -161,20 +161,26 @@ public class MyGraph extends JFrame {
   }
 
   // Calculate shortest path between two words using Dijkstra's algorithm
-  public void calculateShortestPath(String startWord, String endWord) {
+  public String calculateShortestPath(String startWord, String endWord) {
+    StringBuilder result = new StringBuilder();
     if (!graph.getNodeSet().contains(graph.getNode(startWord))) {
-      System.out.println("No such word in the graph!");
-      return;
+      result.append("No such startword in the graph!\n");
+      return result.toString();
     }
 
     // If endWord is empty, compute shortest paths to all other words
     if (endWord.isEmpty()) {
       for (org.graphstream.graph.Node node : graph) {
         if (!node.getId().equals(startWord)) {
-          calculateShortestPath(startWord, node.getId());
+          result.append(calculateShortestPath(startWord, node.getId()));
         }
       }
-      return;
+      return result.toString();
+    }
+
+    if (!graph.getNodeSet().contains(graph.getNode(endWord))) {
+      result.append("No such endword in the graph!\n");
+      return result.toString();
     }
 
     // Initialize distances to infinity and the start node to 0
@@ -205,7 +211,11 @@ public class MyGraph extends JFrame {
         }
       }
     }
-
+    // Check if the endWord is reachable
+    if (distances.get(endWord) == Integer.MAX_VALUE) {
+      result.append("No path from ").append(startWord).append(" to ").append(endWord).append("!\n");
+      return result.toString();
+    }
     // Reconstruct the shortest path
     List<String> shortestPath = new ArrayList<>();
     String current = endWord;
@@ -227,10 +237,11 @@ public class MyGraph extends JFrame {
     }
 
     // Display the shortest path and its length
-    System.out.println("Shortest path from " + startWord + " to " + endWord + ":");
-    System.out.println(String.join(" -> ", shortestPath));
+    result.append("Shortest path from ").append(startWord).append(" to ").append(endWord).append(":\n");
+    result.append(String.join(" -> ", shortestPath)).append("\n");
     int pathLength = distances.get(endWord);
-    System.out.println("Path length: " + pathLength);
+    result.append("Path length: ").append(pathLength).append("\n");
+    return result.toString();
   }
 
 
@@ -322,10 +333,10 @@ public class MyGraph extends JFrame {
   public String queryBridgeWords(String word1, String word2) {
 
     if (graph.getNode(word1) == null && graph.getNode(word2) != null) {
-      return "No " + word1 +  " in the graph!";
+      return "No first word " + word1 +  " in the graph!";
     }
     if (graph.getNode(word1) != null && graph.getNode(word2) == null) {
-      return "No " + word2 +  " in the graph!";
+      return "No second word " + word2 +  " in the graph!";
     }
     if (graph.getNode(word1) == null && graph.getNode(word2) == null) {
       return "No " + word1 + " and " + word2 + " in the graph!";
@@ -417,7 +428,8 @@ public class MyGraph extends JFrame {
           String startWord = scanner.nextLine().trim();
           System.out.print("Enter the end word: ");
           String endWord = scanner.nextLine().trim();
-          myGraph.calculateShortestPath(startWord, endWord);
+          String out = myGraph.calculateShortestPath(startWord, endWord);
+          System.out.println(out);
           break;
         case "4":
           myGraph.randomWalkMultipleTimes(10); // Perform 10 random walks
